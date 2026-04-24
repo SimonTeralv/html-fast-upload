@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mientras Tanto — Unmentaling</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --red: #cc2222;
+    --red-hover: #e02828;
+    --red-glow: rgba(204,34,34,0.18);
+    --white: #f0ede8;
+    --grey: #888888;
+    --grey-light: #555555;
+    --border: #2a2a2a;
+    --selected-border: #cc2222;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NOISE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  /* HEADER */
+  .header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+  }
+
+  .header-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .header-brand .name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--grey);
+  }
+
+  .header-brand .process {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    color: var(--white);
+    letter-spacing: 0.02em;
+  }
+
+  .progress-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .progress-label {
+    font-size: 10px;
+    color: var(--grey);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .progress-track {
+    width: 160px;
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--red);
+    border-radius: 2px;
+    transition: width 0.6s ease;
+    width: 0%;
+  }
+
+  /* MAIN */
+  main {
+    position: relative;
+    z-index: 1;
+    padding-top: 90px;
+  }
+
+  /* INTRO */
+  .intro-section {
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px;
+  }
+
+  .intro-content {
+    max-width: 560px;
+    text-align: center;
+  }
+
+  .intro-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 24px;
+  }
+
+  .intro-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.05;
+    color: var(--white);
+    margin-bottom: 20px;
+  }
+
+  .intro-title span {
+    color: var(--red);
+  }
+
+  .intro-desc {
+    font-size: 13px;
+    color: var(--grey);
+    line-height: 1.8;
+    margin-bottom: 48px;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-start {
+    display: inline-block;
+    background: var(--red);
+    color: var(--white);
+    border: none;
+    padding: 16px 48px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+
+  .btn-start:hover {
+    background: var(--red-hover);
+    box-shadow: 0 0 32px var(--red-glow);
+  }
+
+  /* QUESTIONS */
+  .question-block {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 40px 60px;
+    border-top: 1px solid var(--border);
+    opacity: 0.3;
+    transition: opacity 0.5s ease;
+    scroll-margin-top: 80px;
+  }
+
+  .question-block.active {
+    opacity: 1;
+  }
+
+  .question-block.answered {
+    opacity: 0.5;
+  }
+
+  .question-block.answered:hover {
+    opacity: 0.85;
+  }
+
+  .q-header {
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 48px;
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .q-number {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    color: var(--red);
+    letter-spacing: 0.1em;
+    padding-top: 4px;
+    min-width: 28px;
+  }
+
+  .q-text-wrap {
+    flex: 1;
+  }
+
+  .q-category {
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--grey-light);
+    margin-bottom: 8px;
+  }
+
+  .q-text {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(18px, 2.5vw, 28px);
+    line-height: 1.3;
+    color: var(--white);
+  }
+
+  .q-hint {
+    font-size: 10px;
+    color: var(--grey-light);
+    letter-spacing: 0.12em;
+    margin-top: 8px;
+  }
+
+  /* OPTIONS GRID */
+  .options-grid {
+    width: 100%;
+    max-width: 900px;
+    display: grid;
+    gap: 16px;
+  }
+
+  .options-grid[data-count="3"] { grid-template-columns: repeat(3, 1fr); }
+  .options-grid[data-count="4"] { grid-template-columns: repeat(4, 1fr); }
+  .options-grid[data-count="5"] { grid-template-columns: repeat(5, 1fr); }
+  .options-grid[data-count="6"] { grid-template-columns: repeat(3, 1fr); }
+
+  @media (max-width: 700px) {
+    .options-grid[data-count="3"],
+    .options-grid[data-count="4"],
+    .options-grid[data-count="5"],
+    .options-grid[data-count="6"] {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* OPTION CARD */
+  .option-card {
+    position: relative;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    aspect-ratio: 3/4;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .option-card:hover {
+    border-color: var(--grey-light);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  }
+
+  .option-card.selected {
+    border-color: var(--selected-border);
+    box-shadow: 0 0 0 1px var(--red), 0 12px 40px var(--red-glow);
+    transform: translateY(-3px);
+  }
+
+  .option-img-wrap {
+    flex: 1;
+    overflow: hidden;
+    background: var(--surface2);
+    position: relative;
+  }
+
+  .option-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(20%) contrast(1.05);
+    transition: transform 0.4s ease, filter 0.3s ease;
+  }
+
+  .option-card:hover .option-img {
+    transform: scale(1.04);
+    filter: grayscale(0%) contrast(1.1);
+  }
+
+  .option-card.selected .option-img {
+    filter: grayscale(0%) contrast(1.15);
+  }
+
+  /* Placeholder SVG when no real image */
+  .option-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+  }
+
+  .option-label {
+    padding: 12px 14px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--grey);
+    border-top: 1px solid var(--border);
+    transition: color 0.2s, background 0.2s;
+    text-transform: uppercase;
+  }
+
+  .option-card.selected .option-label {
+    color: var(--white);
+    background: rgba(204,34,34,0.12);
+  }
+
+  .option-check {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid var(--grey-light);
+    border-radius: 50%;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, border-color 0.2s;
+    z-index: 2;
+  }
+
+  .option-card.selected .option-check {
+    background: var(--red);
+    border-color: var(--red);
+  }
+
+  .check-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--white);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .option-card.selected .check-dot {
+    opacity: 1;
+  }
+
+  /* DIVIDER */
+  .q-divider {
+    width: 100%;
+    max-width: 900px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+    margin-top: 56px;
+  }
+
+  /* SUBMIT SECTION */
+  .submit-section {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 32px;
+    padding: 80px 40px;
+    border-top: 1px solid var(--border);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    scroll-margin-top: 80px;
+  }
+
+  .submit-section.visible { opacity: 1; }
+
+  .submit-summary {
+    font-size: 11px;
+    color: var(--grey);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .submit-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(24px, 4vw, 48px);
+    text-align: center;
+  }
+
+  .submit-title span { color: var(--red); }
+
+  .btn-submit {
+    background: var(--red);
+    color: var(--white);
+    border: none;
+    padding: 18px 64px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s, opacity 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-submit:hover:not(:disabled) {
+    background: var(--red-hover);
+    box-shadow: 0 0 48px var(--red-glow);
+  }
+
+  .btn-submit:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .btn-submit .btn-inner { transition: opacity 0.2s; }
+  .btn-submit .btn-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+  }
+
+  .btn-submit.loading .btn-inner { opacity: 0; }
+  .btn-submit.loading .btn-loading { opacity: 1; }
+
+  .unanswered-warning {
+    font-size: 11px;
+    color: var(--red);
+    letter-spacing: 0.1em;
+    opacity: 0;
+    transition: opacity 0.3s;
+    text-align: center;
+  }
+
+  .unanswered-warning.show { opacity: 1; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 14px 28px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--white);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .toast.success { border-color: var(--red); color: var(--white); }
+  .toast.error { border-color: #666; }
+
+  /* SCROLL INDICATOR */
+  .scroll-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 40px;
+    animation: pulse-down 2s ease-in-out infinite;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .scroll-hint.show { opacity: 1; }
+
+  .scroll-hint span {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--grey-light);
+  }
+
+  .scroll-arrow {
+    width: 1px;
+    height: 32px;
+    background: linear-gradient(to bottom, var(--grey-light), transparent);
+  }
+
+  @keyframes pulse-down {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-brand">
+    <span class="name">Unmentaling</span>
+    <span class="process">Mientras Tanto</span>
+  </div>
+  <div class="progress-bar-wrap">
+    <span class="progress-label" id="progressLabel">0 / 16</span>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- INTRO -->
+  <section class="intro-section" id="introSection">
+    <div class="intro-content">
+      <p class="intro-eyebrow">Análisis situacional · Unmentaling</p>
+      <h1 class="intro-title">Mientras<br><span>Tanto</span></h1>
+      <p class="intro-desc">
+        Un proceso de introspección visual.<br>
+        Elegí la imagen que mejor representa lo que sentís,<br>sin pensarlo demasiado.
+      </p>
+      <button class="btn-start" onclick="startForm()">Comenzar</button>
+    </div>
+  </section>
+
+  <!-- QUESTIONS — generated by JS -->
+  <div id="questionsContainer"></div>
+
+  <!-- SUBMIT -->
+  <section class="submit-section" id="submitSection">
+    <p class="submit-summary" id="submitSummary">0 de 16 respondidas</p>
+    <h2 class="submit-title">¿Listo para<br><span>enviar</span>?</h2>
+
+    <button class="btn-submit" id="btnSubmit" onclick="submitForm()">
+      <span class="btn-inner">Enviar análisis</span>
+      <span class="btn-loading">Enviando…</span>
+    </button>
+
+    <p class="unanswered-warning" id="unansweredWarning">
+      Hay preguntas sin responder. Podés igualmente enviar o volver a completarlas.
+    </p>
+  </section>
+
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── PLACEHOLDER SVGS ─────────────────────────────────────────────────────────
+// Each returns an inline SVG string representing a symbolic illustration
+const PLACEHOLDER_SVGS = [
+  // 0 - soledad / figura sola
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+    <rect width="200" height="260" fill="#111"/>
+    <circle cx="100" cy="80" r="22" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="100" y1="102" x2="100" y2="170" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="100" y1="130" x2="72" y2="155" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="100" y1="130" x2="128" y2="155" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="100" y1="170" x2="78" y2="210" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="100" y1="170" x2="122" y2="210" stroke="#f0ede8" stroke-width="1.5"/>
+  </svg>`,
+  // 1 - caos / espiral
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+    <rect width="200" height="260" fill="#111"/>
+    <path d="M100 130 Q120 110 110 90 Q95 70 75 85 Q55 100 70 125 Q85 150 115 145 Q145 138 140 105 Q133 68 95 60 Q55 52 38 90 Q20 130 45 165 Q72 200 120 195 Q168 188 172 140 Q175 92 130 65" stroke="#f0ede8" stroke-width="1.2" stroke-linecap="round"/>
+  </svg>`,
+  // 2 - puerta / umbral
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+    <rect width="200" height="260" fill="#111"/>
+    <rect x="65" y="50" width="70" height="140" rx="35" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="65" y1="190" x2="25" y2="230" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="135" y1="190" x2="175" y2="230" stroke="#f0ede8" stroke-width="1.5"/>
+    <circle cx="120" cy="122" r="4" fill="#f0ede8"/>
+  </svg>`,
+  // 3 - montaña / obstáculo
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+    <rect width="200" height="260" fill="#111"/>
+    <polyline points="20,220 100,60 180,220" stroke="#f0ede8" stroke-width="1.5" stroke-linejoin="round"/>
+    <polyline points="55,220 100,140 145,220" stroke="#888" stroke-width="1" stroke-linejoin="round"/>
+    <line x1="20" y1="220" x2="180" y2="220" stroke="#f0ede8" stroke-width="1.5"/>
+  </svg>`,
+  // 4 - espejo / reflejo
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+    <rect width="200" height="260" fill="#111"/>
+    <rect x="55" y="40" width="90" height="130" rx="4" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="100" y1="170" x2="100" y2="220" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="70" y1="220" x2="130" y2="220" stroke="#f0ede8" stroke-width="1.5"/>
+    <circle cx="100" cy="90" r="18" stroke="#888" stroke-width="1" stroke-dasharray="4 4"/>
+  </svg>`,
+  // 5 - raíces
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+    <rect width="200" height="260" fill="#111"/>
+    <line x1="100" y1="50" x2="100" y2="150" stroke="#f0ede8" stroke-width="1.5"/>
+    <path d="M100 150 Q80 170 60 190 Q50 210 45 230" stroke="#f0ede8" stroke-width="1.2"/>
+    <path d="M100 150 Q120 170 140 190 Q150 210 155 230" stroke="#f0ede8" stroke-width="1.2"/>
+    <path d="M100 170 Q90 185 80 205" stroke="#888" stroke-width="1"/>
+    <path d="M100 170 Q110 185 120 205" stroke="#888" stroke-width="1"/>
+    <path d="M80 155 Q65 145 55 130" stroke="#888" stroke-width="1"/>
+    <path d="M120 155 Q135 145 145 130" stroke="#888" stroke-width="1"/>
+  </svg>`,
+  // 6 - ola / flujo
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+    <rect width="200" height="260" fill="#111"/>
+    <path d="M10 100 Q40 60 70 100 Q100 140 130 100 Q160 60 190 100" stroke="#f0ede8" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M10 135 Q40 95 70 135 Q100 175 130 135 Q160 95 190 135" stroke="#888" stroke-width="1" stroke-linecap="round"/>
+    <path d="M10 170 Q40 130 70 170 Q100 210 130 170 Q160 130 190 170" stroke="#555" stroke-width="0.8" stroke-linecap="round"/>
+  </svg>`,
+  // 7 - red / conexiones
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+    <rect width="200" height="260" fill="#111"/>
+    <circle cx="100" cy="130" r="6" fill="#f0ede8"/>
+    <circle cx="50" cy="80" r="4" fill="#888"/>
+    <circle cx="155" cy="70" r="4" fill="#888"/>
+    <circle cx="40" cy="180" r="4" fill="#888"/>
+    <circle cx="160" cy="180" r="4" fill="#888"/>
+    <circle cx="100" cy="220" r="4" fill="#888"/>
+    <line x1="100" y1="130" x2="50" y2="80" stroke="#555" stroke-width="1"/>
+    <line x1="100" y1="130" x2="155" y2="70" stroke="#555" stroke-width="1"/>
+    <line x1="100" y1="130" x2="40" y2="180" stroke="#555" stroke-width="1"/>
+    <line x1="100" y1="130" x2="160" y2="180" stroke="#555" stroke-width="1"/>
+    <line x1="100" y1="130" x2="100" y2="220" stroke="#555" stroke-width="1"/>
+    <line x1="50" y1="80" x2="155" y2="70" stroke="#333" stroke-width="0.8"/>
+    <line x1="40" y1="180" x2="100" y2="220" stroke="#333" stroke-width="0.8"/>
+    <line x1="160" y1="180" x2="100" y2="220" stroke="#333" stroke-width="0.8"/>
+  </svg>`,
+  // 8 - reloj / tiempo
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+    <rect width="200" height="260" fill="#111"/>
+    <circle cx="100" cy="120" r="65" stroke="#f0ede8" stroke-width="1.5"/>
+    <circle cx="100" cy="120" r="4" fill="#f0ede8"/>
+    <line x1="100" y1="120" x2="100" y2="68" stroke="#f0ede8" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="100" y1="120" x2="138" y2="138" stroke="#888" stroke-width="1.2" stroke-linecap="round"/>
+    <line x1="100" y1="60" x2="100" y2="68" stroke="#555" stroke-width="1"/>
+    <line x1="100" y1="172" x2="100" y2="180" stroke="#555" stroke-width="1"/>
+    <line x1="40" y1="120" x2="48" y2="120" stroke="#555" stroke-width="1"/>
+    <line x1="152" y1="120" x2="160" y2="120" stroke="#555" stroke-width="1"/>
+  </svg>`,
+  // 9 - laberinto
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+    <rect width="200" height="260" fill="#111"/>
+    <rect x="40" y="60" width="120" height="140" stroke="#f0ede8" stroke-width="1.5"/>
+    <path d="M40 90 L100 90 L100 130 L60 130 L60 160 L140 160 L140 100 L110 100" stroke="#888" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="155" cy="72" r="4" fill="#cc2222"/>
+    <circle cx="45" cy="190" r="4" fill="#888"/>
+  </svg>`,
+  // 10 - sol / luz
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+    <rect width="200" height="260" fill="#111"/>
+    <circle cx="100" cy="120" r="32" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="100" y1="70" x2="100" y2="58" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="100" y1="170" x2="100" y2="182" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="50" y1="120" x2="38" y2="120" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="150" y1="120" x2="162" y2="120" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="65" y1="85" x2="57" y2="77" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="135" y1="155" x2="143" y2="163" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="135" y1="85" x2="143" y2="77" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="65" y1="155" x2="57" y2="163" stroke="#f0ede8" stroke-width="1.5"/>
+  </svg>`,
+  // 11 - vacío / caja abierta
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+    <rect width="200" height="260" fill="#111"/>
+    <path d="M50 160 L100 140 L150 160 L150 210 L100 230 L50 210 Z" stroke="#f0ede8" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M50 160 L100 180 L150 160" stroke="#888" stroke-width="1"/>
+    <path d="M100 180 L100 230" stroke="#888" stroke-width="1"/>
+    <path d="M50 120 L100 100 L150 120 L100 140 Z" stroke="#555" stroke-width="1" stroke-linejoin="round"/>
+  </svg>`,
+  // 12 - cadenas / atadura
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+    <rect width="200" height="260" fill="#111"/>
+    <ellipse cx="80" cy="100" rx="20" ry="12" stroke="#f0ede8" stroke-width="1.5" transform="rotate(-30 80 100)"/>
+    <ellipse cx="110" cy="118" rx="20" ry="12" stroke="#f0ede8" stroke-width="1.5" transform="rotate(-30 110 118)"/>
+    <ellipse cx="90" cy="140" rx="20" ry="12" stroke="#f0ede8" stroke-width="1.5" transform="rotate(-30 90 140)"/>
+    <ellipse cx="115" cy="160" rx="20" ry="12" stroke="#888" stroke-width="1.2" transform="rotate(-30 115 160)"/>
+  </svg>`,
+  // 13 - camino bifurcado
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+    <rect width="200" height="260" fill="#111"/>
+    <path d="M100 230 L100 140" stroke="#f0ede8" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M100 140 Q90 110 55 70" stroke="#f0ede8" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M100 140 Q110 110 145 70" stroke="#888" stroke-width="1.2" stroke-linecap="round"/>
+    <circle cx="100" cy="140" r="5" fill="none" stroke="#cc2222" stroke-width="1.5"/>
+  </svg>`,
+  // 14 - lluvia interior
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+    <rect width="200" height="260" fill="#111"/>
+    <path d="M30 80 Q60 50 100 60 Q140 50 170 80 Q185 100 170 120 L30 120 Q15 100 30 80Z" stroke="#f0ede8" stroke-width="1.5"/>
+    <line x1="60" y1="135" x2="50" y2="170" stroke="#888" stroke-width="1"/>
+    <line x1="80" y1="130" x2="70" y2="175" stroke="#888" stroke-width="1"/>
+    <line x1="100" y1="132" x2="90" y2="180" stroke="#888" stroke-width="1"/>
+    <line x1="120" y1="130" x2="112" y2="175" stroke="#888" stroke-width="1"/>
+    <line x1="140" y1="135" x2="132" y2="170" stroke="#888" stroke-width="1"/>
+    <line x1="70" y1="185" x2="62" y2="218" stroke="#555" stroke-width="0.8"/>
+    <line x1="95" y1="193" x2="88" y2="220" stroke="#555" stroke-width="0.8"/>
+    <line x1="120" y1="188" x2="114" y2="216" stroke="#555" stroke-width="0.8"/>
+  </svg>`,
+  // 15 - brújula / dirección
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
+    <rect width="200" height="260" fill="#111"/>
+    <circle cx="100" cy="120" r="60" stroke="#f0ede8" stroke-width="1.5"/>
+    <circle cx="100" cy="120" r="4" fill="#f0ede8"/>
+    <polygon points="100,70 93,118 107,118" fill="#cc2222"/>
+    <polygon points="100,170 93,122 107,122" fill="#555"/>
+    <line x1="100" y1="65" x2="100" y2="58" stroke="#f0ede8" stroke-width="1"/>
+    <line x1="100" y1="175" x2="100" y2="182" stroke="#f0ede8" stroke-width="1"/>
+    <line x1="45" y1="120" x2="38" y2="120" stroke="#f0ede8" stroke-width="1"/>
+    <line x1="155" y1="120" x2="162" y2="120" stroke="#f0ede8" stroke-width="1"/>
+    <text x="100" y="56" text-anchor="middle" fill="#888" font-size="9" font-family="monospace">N</text>
+  </svg>`,
+];
+
+// ─── QUESTIONS DATA ───────────────────────────────────────────────────────────
+const QUESTIONS = [
+  {
+    category: "Presencia",
+    text: "¿Qué imagen refleja cómo te sentís ahora mismo?",
+    options: [
+      { label: "Quietud", svg: 0 },
+      { label: "Movimiento", svg: 6 },
+      { label: "Confusión", svg: 1 },
+      { label: "Espera", svg: 8 },
+    ]
+  },
+  {
+    category: "Cuerpo",
+    text: "¿Cuál de estas figuras se parece más a tu cuerpo hoy?",
+    options: [
+      { label: "Tenso", svg: 12 },
+      { label: "Enraizado", svg: 5 },
+      { label: "Liviano", svg: 10 },
+    ]
+  },
+  {
+    category: "Entorno",
+    text: "¿Cómo vivís el espacio donde estás?",
+    options: [
+      { label: "Amplio", svg: 2 },
+      { label: "Laberíntico", svg: 9 },
+      { label: "Contenedor", svg: 11 },
+      { label: "Conectado", svg: 7 },
+    ]
+  },
+  {
+    category: "Tiempo",
+    text: "¿Qué imagen representa tu relación con el tiempo?",
+    options: [
+      { label: "Detenido", svg: 8 },
+      { label: "Bifurcado", svg: 13 },
+      { label: "Circular", svg: 1 },
+      { label: "Fluyendo", svg: 6 },
+      { label: "Pesado", svg: 12 },
+    ]
+  },
+  {
+    category: "Vínculos",
+    text: "¿Cómo te relacionás con los demás en este momento?",
+    options: [
+      { label: "En red", svg: 7 },
+      { label: "Solo/a", svg: 0 },
+      { label: "Atado/a", svg: 12 },
+      { label: "En umbral", svg: 2 },
+    ]
+  },
+  {
+    category: "Emoción",
+    text: "¿Qué símbolo se acerca más a lo que estás sintiendo?",
+    options: [
+      { label: "Tempestad", svg: 14 },
+      { label: "Luz", svg: 10 },
+      { label: "Vacío", svg: 11 },
+      { label: "Espiral", svg: 1 },
+      { label: "Raíz", svg: 5 },
+      { label: "Calma", svg: 6 },
+    ]
+  },
+  {
+    category: "Dirección",
+    text: "¿Sabés hacia dónde vas?",
+    options: [
+      { label: "Sí, claro", svg: 15 },
+      { label: "En duda", svg: 13 },
+      { label: "Dando vueltas", svg: 1 },
+      { label: "Estancado/a", svg: 8 },
+    ]
+  },
+  {
+    category: "Obstáculos",
+    text: "¿Qué imagen representa lo que te frena?",
+    options: [
+      { label: "Montaña", svg: 3 },
+      { label: "Cadenas", svg: 12 },
+      { label: "Laberinto", svg: 9 },
+      { label: "Espejo", svg: 4 },
+    ]
+  },
+  {
+    category: "Recursos",
+    text: "¿Con qué contás hoy para avanzar?",
+    options: [
+      { label: "Raíces", svg: 5 },
+      { label: "Red", svg: 7 },
+      { label: "Brújula", svg: 15 },
+      { label: "Luz propia", svg: 10 },
+      { label: "Poco", svg: 11 },
+    ]
+  },
+  {
+    category: "Pasado",
+    text: "¿Cómo cargás lo que ya viviste?",
+    options: [
+      { label: "Como peso", svg: 12 },
+      { label: "Como raíz", svg: 5 },
+      { label: "Con distancia", svg: 4 },
+      { label: "Todavía cerca", svg: 1 },
+    ]
+  },
+  {
+    category: "Futuro",
+    text: "¿Cómo imaginás lo que viene?",
+    options: [
+      { label: "Abierto", svg: 2 },
+      { label: "Incierto", svg: 9 },
+      { label: "Luminoso", svg: 10 },
+      { label: "Borroso", svg: 14 },
+      { label: "Esperanzador", svg: 15 },
+    ]
+  },
+  {
+    category: "Identidad",
+    text: "¿Qué imagen dice algo verdadero sobre vos?",
+    options: [
+      { label: "Reflejo", svg: 4 },
+      { label: "Enraizado/a", svg: 5 },
+      { label: "En camino", svg: 13 },
+      { label: "Conectado/a", svg: 7 },
+    ]
+  },
+  {
+    category: "Necesidad",
+    text: "¿Qué necesitás en este momento?",
+    options: [
+      { label: "Claridad", svg: 15 },
+      { label: "Soltar", svg: 12 },
+      { label: "Fluir", svg: 6 },
+      { label: "Parar", svg: 8 },
+      { label: "Conectar", svg: 7 },
+      { label: "Luz", svg: 10 },
+    ]
+  },
+  {
+    category: "Acción",
+    text: "¿Qué figura describe mejor tu próximo paso?",
+    options: [
+      { label: "Cruzar la puerta", svg: 2 },
+      { label: "Escalar", svg: 3 },
+      { label: "Fluir", svg: 6 },
+      { label: "Descansar", svg: 0 },
+    ]
+  },
+  {
+    category: "Cierre",
+    text: "¿Qué palabra visual describe este proceso para vos?",
+    options: [
+      { label: "Caos", svg: 1 },
+      { label: "Orden", svg: 9 },
+      { label: "Transformación", svg: 13 },
+      { label: "Silencio", svg: 0 },
+      { label: "Apertura", svg: 2 },
+    ]
+  },
+  {
+    category: "Integración",
+    text: "¿Qué imagen te gustaría llevarte de este análisis?",
+    options: [
+      { label: "Raíces", svg: 5 },
+      { label: "Brújula", svg: 15 },
+      { label: "Luz", svg: 10 },
+      { label: "Red", svg: 7 },
+      { label: "Camino", svg: 13 },
+      { label: "Fluir", svg: 6 },
+    ]
+  },
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+const answers = {};
+
+// ─── BUILD DOM ────────────────────────────────────────────────────────────────
+function buildQuestions() {
+  const container = document.getElementById('questionsContainer');
+
+  QUESTIONS.forEach((q, qi) => {
+    const block = document.createElement('section');
+    block.className = 'question-block' + (qi === 0 ? ' active' : '');
+    block.id = `q${qi}`;
+    block.dataset.index = qi;
+
+    const count = q.options.length;
+    const gridCount = count <= 6 ? count : 6;
+
+    block.innerHTML = `
+      <div class="q-header">
+        <span class="q-number">${String(qi + 1).padStart(2,'0')}</span>
+        <div class="q-text-wrap">
+          <p class="q-category">${q.category}</p>
+          <h2 class="q-text">${q.text}</h2>
+          <p class="q-hint">Seleccioná la imagen que más resuena</p>
+        </div>
+      </div>
+      <div class="options-grid" data-count="${gridCount}" id="grid${qi}">
+        ${q.options.map((opt, oi) => `
+          <div class="option-card" id="opt_${qi}_${oi}" onclick="selectOption(${qi}, ${oi}, '${escapeLabel(opt.label)}')">
+            <div class="option-img-wrap">
+              <div class="option-placeholder">${PLACEHOLDER_SVGS[opt.svg]}</div>
+            </div>
+            <div class="option-check"><div class="check-dot"></div></div>
+            <div class="option-label">${opt.label}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="q-divider"></div>
+    `;
+
+    container.appendChild(block);
+  });
+}
+
+function escapeLabel(s) { return s.replace(/'/g,"&#39;"); }
+
+// ─── INTERACTION ──────────────────────────────────────────────────────────────
+function selectOption(qi, oi, label) {
+  // Deselect previous in same question
+  document.querySelectorAll(`#q${qi} .option-card`).forEach(c => c.classList.remove('selected'));
+
+  // Select new
+  document.getElementById(`opt_${qi}_${oi}`).classList.add('selected');
+  answers[qi] = { question: QUESTIONS[qi].text, answer: label, category: QUESTIONS[qi].category };
+
+  // Mark as answered
+  const block = document.getElementById(`q${qi}`);
+  block.classList.remove('active');
+  block.classList.add('answered');
+
+  updateProgress();
+
+  // Auto-scroll to next question or submit
+  setTimeout(() => {
+    const nextIndex = qi + 1;
+    if (nextIndex < QUESTIONS.length) {
+      const nextBlock = document.getElementById(`q${nextIndex}`);
+      nextBlock.classList.add('active');
+      nextBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      const submitSection = document.getElementById('submitSection');
+      submitSection.classList.add('visible');
+      submitSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 300);
+}
+
+function updateProgress() {
+  const answered = Object.keys(answers).length;
+  const total = QUESTIONS.length;
+  document.getElementById('progressLabel').textContent = `${answered} / ${total}`;
+  document.getElementById('progressFill').style.width = `${(answered / total) * 100}%`;
+  document.getElementById('submitSummary').textContent = `${answered} de ${total} respondidas`;
+}
+
+function startForm() {
+  const intro = document.getElementById('introSection');
+  intro.style.opacity = '0';
+  intro.style.transition = 'opacity 0.5s';
+  setTimeout(() => {
+    document.getElementById('q0').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 300);
+}
+
+// ─── SUBMIT ───────────────────────────────────────────────────────────────────
+const WEBHOOK_URL = 'https://n8n.protocore.com.ar/webhook/unmentaling-form';
+
+async function submitForm() {
+  const answered = Object.keys(answers).length;
+  const warning = document.getElementById('unansweredWarning');
+
+  if (answered < QUESTIONS.length) {
+    warning.classList.add('show');
+    setTimeout(() => warning.classList.remove('show'), 5000);
+  }
+
+  const btn = document.getElementById('btnSubmit');
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  try {
+    // ── 1. Build JSON payload ──
+    const payload = {
+      proceso: "Mientras Tanto",
+      timestamp: new Date().toISOString(),
+      respuestas_completas: answered === QUESTIONS.length,
+      total_respondidas: answered,
+      total_preguntas: QUESTIONS.length,
+      respuestas: QUESTIONS.map((q, i) => ({
+        numero: i + 1,
+        categoria: q.category,
+        pregunta: q.text,
+        respuesta: answers[i] ? answers[i].answer : null,
+      })),
+    };
+
+    // ── 2. Build HTML report as binary file ──
+    const htmlReport = buildHTMLReport(payload);
+    const htmlBlob = new Blob([htmlReport], { type: 'text/html' });
+    const htmlFile = new File([htmlBlob], 'mientras-tanto-respuestas.html', { type: 'text/html' });
+
+    // ── 3. Send as multipart/form-data (JSON field + binary file) ──
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(payload));           // JSON string field — readable in n8n as {{ $json.body.data }}
+    formData.append('file', htmlFile, 'mientras-tanto-respuestas.html'); // binary file — accessible as binary in n8n
+
+    const res = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      body: formData,
+      // NOTE: Do NOT set Content-Type header manually — browser sets it with boundary automatically
+    });
+
+    if (res.ok) {
+      showToast('Análisis enviado correctamente ✓', 'success');
+      btn.querySelector('.btn-inner').textContent = 'Enviado ✓';
+      btn.style.background = '#1a1a1a';
+      btn.style.color = '#555';
+      btn.classList.remove('loading');
+    } else {
+      throw new Error(`HTTP ${res.status} — ${res.statusText}`);
+    }
+  } catch (err) {
+    showToast(`Error al enviar: ${err.message}`, 'error');
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+// ── Generates a clean HTML report to attach as binary file ──
+function buildHTMLReport(payload) {
+  const rows = payload.respuestas.map(r => `
+    <tr>
+      <td class="num">${String(r.numero).padStart(2,'0')}</td>
+      <td class="cat">${r.categoria}</td>
+      <td class="q">${r.pregunta}</td>
+      <td class="a ${r.respuesta ? '' : 'empty'}">${r.respuesta || '—'}</td>
+    </tr>`).join('');
+
+  return `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mientras Tanto — Respuestas</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap');
+  body { background:#0a0a0a; color:#f0ede8; font-family:'Space Grotesk', sans-serif; padding:48px; margin:0; }
+  h1 { font-family:'Space Grotesk', sans-serif; font-style:italic; font-size:36px; margin:0 0 6px; }
+  .meta { font-size:11px; color:#555; letter-spacing:.15em; margin-bottom:40px; }
+  .meta span { color:#888; margin-right:24px; }
+  table { width:100%; border-collapse:collapse; }
+  th { font-size:9px; letter-spacing:.3em; text-transform:uppercase; color:#444; padding:8px 12px; border-bottom:1px solid #222; text-align:left; }
+  td { padding:12px; border-bottom:1px solid #1a1a1a; font-size:12px; vertical-align:top; }
+  td.num { color:#333; width:40px; }
+  td.cat { color:#555; font-size:10px; letter-spacing:.1em; text-transform:uppercase; width:120px; }
+  td.q { color:#888; }
+  td.a { color:#f0ede8; font-weight:500; }
+  td.a.empty { color:#333; }
+  .badge { display:inline-block; background:#cc2222; color:#fff; font-size:9px; letter-spacing:.2em; padding:4px 10px; margin-top:32px; }
+</style>
+</head>
+<body>
+<h1>Mientras Tanto</h1>
+<p class="meta">
+  <span>Unmentaling</span>
+  <span>${payload.timestamp.replace('T',' ').substring(0,19)}</span>
+  <span>${payload.total_respondidas}/${payload.total_preguntas} respondidas</span>
+</p>
+<table>
+  <thead><tr><th>#</th><th>Categoría</th><th>Pregunta</th><th>Respuesta</th></tr></thead>
+  <tbody>${rows}</tbody>
+</table>
+<p class="badge">ANÁLISIS SITUACIONAL</p>
+</body>
+</html>`;
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// ─── INTERSECTION OBSERVER (activates question on scroll into view) ────────────
+function setupObserver() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const block = entry.target;
+        const qi = parseInt(block.dataset.index);
+        if (!answers[qi]) {
+          block.classList.add('active');
+        }
+      }
+    });
+  }, { threshold: 0.4 });
+
+  document.querySelectorAll('.question-block').forEach(b => observer.observe(b));
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+buildQuestions();
+setupObserver();
+</script>
+</body>
+</html>
