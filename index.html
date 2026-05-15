@@ -251,18 +251,22 @@
     max-width: 900px;
     display: grid;
     gap: 16px;
+    align-items: stretch;
   }
 
+  .options-grid[data-count="2"] { grid-template-columns: repeat(2, 1fr); }
   .options-grid[data-count="3"] { grid-template-columns: repeat(3, 1fr); }
   .options-grid[data-count="4"] { grid-template-columns: repeat(4, 1fr); }
   .options-grid[data-count="5"] { grid-template-columns: repeat(5, 1fr); }
   .options-grid[data-count="6"] { grid-template-columns: repeat(3, 1fr); }
+  .options-grid[data-count="8"] { grid-template-columns: repeat(4, 1fr); }
 
   @media (max-width: 700px) {
     .options-grid[data-count="3"],
     .options-grid[data-count="4"],
     .options-grid[data-count="5"],
-    .options-grid[data-count="6"] {
+    .options-grid[data-count="6"],
+    .options-grid[data-count="8"] {
       grid-template-columns: repeat(2, 1fr);
     }
   }
@@ -275,7 +279,6 @@
     background: var(--surface);
     overflow: hidden;
     transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
-    aspect-ratio: 3/4;
     display: flex;
     flex-direction: column;
   }
@@ -293,7 +296,8 @@
   }
 
   .option-img-wrap {
-    flex: 1;
+    width: 100%;
+    aspect-ratio: 1 / 1;
     overflow: hidden;
     background: var(--surface2);
     position: relative;
@@ -304,8 +308,6 @@
     height: 100%;
     object-fit: cover;
     display: block;
-    filter: grayscale(20%) contrast(1.05);
-    transition: transform 0.4s ease, filter 0.3s ease;
   }
 
   .option-card:hover .option-img {
@@ -315,16 +317,6 @@
 
   .option-card.selected .option-img {
     filter: grayscale(0%) contrast(1.15);
-  }
-
-  /* Placeholder SVG when no real image */
-  .option-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface2);
   }
 
   .option-label {
@@ -525,6 +517,191 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(6px); }
   }
+
+  /* FORM SECTIONS (user info + situación) */
+  .form-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 40px 60px;
+    border-top: 1px solid var(--border);
+    opacity: 0.3;
+    transition: opacity 0.5s ease;
+    scroll-margin-top: 80px;
+    pointer-events: none;
+  }
+
+  .form-section.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .form-inner {
+    width: 100%;
+    max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .section-eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--grey-light);
+  }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(24px, 4vw, 42px);
+    line-height: 1.1;
+    color: var(--white);
+  }
+
+  .section-subtitle {
+    font-size: 13px;
+    color: var(--grey);
+    line-height: 1.8;
+  }
+
+  .helper-block {
+    font-size: 12px;
+    color: var(--grey-light);
+    line-height: 1.8;
+    border-left: 2px solid var(--border);
+    padding-left: 16px;
+  }
+
+  .fields-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 600px) {
+    .fields-grid { grid-template-columns: 1fr; }
+  }
+
+  .field-wrap { display: flex; flex-direction: column; gap: 8px; }
+  .field-wrap.field-full { grid-column: 1 / -1; }
+
+  .field-label {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--grey-light);
+  }
+
+  .field-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    padding: 14px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  .field-input::placeholder { color: var(--grey-light); }
+  .field-input:focus { border-color: var(--grey-light); }
+
+  .field-textarea {
+    resize: vertical;
+    min-height: 160px;
+  }
+
+  .btn-continue {
+    align-self: flex-start;
+    background: var(--red);
+    color: var(--white);
+    border: none;
+    padding: 14px 40px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+
+  .btn-continue:hover {
+    background: var(--red-hover);
+    box-shadow: 0 0 32px var(--red-glow);
+  }
+
+  .field-error {
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 0.1em;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .field-error.show { opacity: 1; }
+
+  /* TEXT INPUT QUESTIONS */
+  .text-inputs-wrap {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .text-input-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 600px) {
+    .text-input-group { grid-template-columns: 1fr; }
+  }
+
+  .word-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    padding: 20px 18px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  .word-input::placeholder { color: var(--grey-light); }
+  .word-input:focus { border-color: var(--grey-light); }
+
+  .word-input:disabled {
+    border-color: var(--red);
+    background: rgba(204,34,34,0.06);
+    color: var(--white);
+    opacity: 1;
+    cursor: default;
+  }
+
+  .btn-confirm {
+    align-self: flex-start;
+    background: transparent;
+    border: 1px solid var(--grey-light);
+    color: var(--grey);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 12px 32px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .btn-confirm:hover {
+    border-color: var(--white);
+    color: var(--white);
+  }
 </style>
 </head>
 <body>
@@ -558,6 +735,59 @@
     </div>
   </section>
 
+  <!-- SECTION 1 · USER INFO -->
+  <section class="form-section" id="sUserInfo">
+    <div class="form-inner">
+      <p class="section-eyebrow">Paso 01 · Datos personales</p>
+      <h2 class="section-title">Contanos sobre vos</h2>
+      <div class="fields-grid">
+        <div class="field-wrap field-full">
+          <label class="field-label">Nombre y Apellido</label>
+          <input class="field-input" id="f_nombre" type="text" placeholder="Tu nombre completo">
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Apodo</label>
+          <input class="field-input" id="f_apodo" type="text" placeholder="Como te llaman">
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Fecha de nacimiento</label>
+          <input class="field-input" id="f_nacimiento" type="date">
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Celular</label>
+          <input class="field-input" id="f_celular" type="tel" placeholder="+54 9 ...">
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Mail</label>
+          <input class="field-input" id="f_mail" type="email" placeholder="tu@mail.com">
+        </div>
+        <div class="field-wrap field-full">
+          <label class="field-label">¿A qué te dedicás?</label>
+          <input class="field-input" id="f_ocupacion" type="text" placeholder="Tu actividad principal">
+        </div>
+      </div>
+      <span class="field-error" id="errUserInfo">Completá al menos nombre y mail para continuar.</span>
+      <button class="btn-continue" onclick="submitUserInfo()">Continuar →</button>
+    </div>
+  </section>
+
+  <!-- SECTION 2 · SITUACIÓN ACTUAL -->
+  <section class="form-section" id="sSituacion">
+    <div class="form-inner">
+      <p class="section-eyebrow">Paso 02 · Punto de partida</p>
+      <h2 class="section-title">Situación actual</h2>
+      <p class="section-subtitle">¿Cómo estás? ¿Cómo te sentís? ¿Para qué estás haciendo el MIENTRAS TANTO?</p>
+      <div class="helper-block">
+        Este paso es fundamental: acá vas a tomar conciencia y reconocer tu punto A,
+        que es el primer paso para recorrer el mientras tanto hacia el punto B que estás
+        a punto de diseñar. Explayate para tener información valiosa sobre vos.
+      </div>
+      <textarea class="field-input field-textarea" id="f_situacion" placeholder="Escribí libremente…"></textarea>
+      <span class="field-error" id="errSituacion" style="margin-top:12px;">Escribí algo para continuar.</span>
+      <button class="btn-continue" onclick="submitSituacion()">Continuar →</button>
+    </div>
+  </section>
+
   <!-- QUESTIONS — generated by JS -->
   <div id="questionsContainer"></div>
 
@@ -582,339 +812,220 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ─── PLACEHOLDER SVGS ─────────────────────────────────────────────────────────
-// Each returns an inline SVG string representing a symbolic illustration
-const PLACEHOLDER_SVGS = [
-  // 0 - soledad / figura sola
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
-    <rect width="200" height="260" fill="#111"/>
-    <circle cx="100" cy="80" r="22" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="100" y1="102" x2="100" y2="170" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="100" y1="130" x2="72" y2="155" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="100" y1="130" x2="128" y2="155" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="100" y1="170" x2="78" y2="210" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="100" y1="170" x2="122" y2="210" stroke="#f0ede8" stroke-width="1.5"/>
-  </svg>`,
-  // 1 - caos / espiral
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
-    <rect width="200" height="260" fill="#111"/>
-    <path d="M100 130 Q120 110 110 90 Q95 70 75 85 Q55 100 70 125 Q85 150 115 145 Q145 138 140 105 Q133 68 95 60 Q55 52 38 90 Q20 130 45 165 Q72 200 120 195 Q168 188 172 140 Q175 92 130 65" stroke="#f0ede8" stroke-width="1.2" stroke-linecap="round"/>
-  </svg>`,
-  // 2 - puerta / umbral
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
-    <rect width="200" height="260" fill="#111"/>
-    <rect x="65" y="50" width="70" height="140" rx="35" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="65" y1="190" x2="25" y2="230" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="135" y1="190" x2="175" y2="230" stroke="#f0ede8" stroke-width="1.5"/>
-    <circle cx="120" cy="122" r="4" fill="#f0ede8"/>
-  </svg>`,
-  // 3 - montaña / obstáculo
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
-    <rect width="200" height="260" fill="#111"/>
-    <polyline points="20,220 100,60 180,220" stroke="#f0ede8" stroke-width="1.5" stroke-linejoin="round"/>
-    <polyline points="55,220 100,140 145,220" stroke="#888" stroke-width="1" stroke-linejoin="round"/>
-    <line x1="20" y1="220" x2="180" y2="220" stroke="#f0ede8" stroke-width="1.5"/>
-  </svg>`,
-  // 4 - espejo / reflejo
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
-    <rect width="200" height="260" fill="#111"/>
-    <rect x="55" y="40" width="90" height="130" rx="4" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="100" y1="170" x2="100" y2="220" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="70" y1="220" x2="130" y2="220" stroke="#f0ede8" stroke-width="1.5"/>
-    <circle cx="100" cy="90" r="18" stroke="#888" stroke-width="1" stroke-dasharray="4 4"/>
-  </svg>`,
-  // 5 - raíces
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
-    <rect width="200" height="260" fill="#111"/>
-    <line x1="100" y1="50" x2="100" y2="150" stroke="#f0ede8" stroke-width="1.5"/>
-    <path d="M100 150 Q80 170 60 190 Q50 210 45 230" stroke="#f0ede8" stroke-width="1.2"/>
-    <path d="M100 150 Q120 170 140 190 Q150 210 155 230" stroke="#f0ede8" stroke-width="1.2"/>
-    <path d="M100 170 Q90 185 80 205" stroke="#888" stroke-width="1"/>
-    <path d="M100 170 Q110 185 120 205" stroke="#888" stroke-width="1"/>
-    <path d="M80 155 Q65 145 55 130" stroke="#888" stroke-width="1"/>
-    <path d="M120 155 Q135 145 145 130" stroke="#888" stroke-width="1"/>
-  </svg>`,
-  // 6 - ola / flujo
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
-    <rect width="200" height="260" fill="#111"/>
-    <path d="M10 100 Q40 60 70 100 Q100 140 130 100 Q160 60 190 100" stroke="#f0ede8" stroke-width="1.5" stroke-linecap="round"/>
-    <path d="M10 135 Q40 95 70 135 Q100 175 130 135 Q160 95 190 135" stroke="#888" stroke-width="1" stroke-linecap="round"/>
-    <path d="M10 170 Q40 130 70 170 Q100 210 130 170 Q160 130 190 170" stroke="#555" stroke-width="0.8" stroke-linecap="round"/>
-  </svg>`,
-  // 7 - red / conexiones
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
-    <rect width="200" height="260" fill="#111"/>
-    <circle cx="100" cy="130" r="6" fill="#f0ede8"/>
-    <circle cx="50" cy="80" r="4" fill="#888"/>
-    <circle cx="155" cy="70" r="4" fill="#888"/>
-    <circle cx="40" cy="180" r="4" fill="#888"/>
-    <circle cx="160" cy="180" r="4" fill="#888"/>
-    <circle cx="100" cy="220" r="4" fill="#888"/>
-    <line x1="100" y1="130" x2="50" y2="80" stroke="#555" stroke-width="1"/>
-    <line x1="100" y1="130" x2="155" y2="70" stroke="#555" stroke-width="1"/>
-    <line x1="100" y1="130" x2="40" y2="180" stroke="#555" stroke-width="1"/>
-    <line x1="100" y1="130" x2="160" y2="180" stroke="#555" stroke-width="1"/>
-    <line x1="100" y1="130" x2="100" y2="220" stroke="#555" stroke-width="1"/>
-    <line x1="50" y1="80" x2="155" y2="70" stroke="#333" stroke-width="0.8"/>
-    <line x1="40" y1="180" x2="100" y2="220" stroke="#333" stroke-width="0.8"/>
-    <line x1="160" y1="180" x2="100" y2="220" stroke="#333" stroke-width="0.8"/>
-  </svg>`,
-  // 8 - reloj / tiempo
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
-    <rect width="200" height="260" fill="#111"/>
-    <circle cx="100" cy="120" r="65" stroke="#f0ede8" stroke-width="1.5"/>
-    <circle cx="100" cy="120" r="4" fill="#f0ede8"/>
-    <line x1="100" y1="120" x2="100" y2="68" stroke="#f0ede8" stroke-width="1.5" stroke-linecap="round"/>
-    <line x1="100" y1="120" x2="138" y2="138" stroke="#888" stroke-width="1.2" stroke-linecap="round"/>
-    <line x1="100" y1="60" x2="100" y2="68" stroke="#555" stroke-width="1"/>
-    <line x1="100" y1="172" x2="100" y2="180" stroke="#555" stroke-width="1"/>
-    <line x1="40" y1="120" x2="48" y2="120" stroke="#555" stroke-width="1"/>
-    <line x1="152" y1="120" x2="160" y2="120" stroke="#555" stroke-width="1"/>
-  </svg>`,
-  // 9 - laberinto
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
-    <rect width="200" height="260" fill="#111"/>
-    <rect x="40" y="60" width="120" height="140" stroke="#f0ede8" stroke-width="1.5"/>
-    <path d="M40 90 L100 90 L100 130 L60 130 L60 160 L140 160 L140 100 L110 100" stroke="#888" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    <circle cx="155" cy="72" r="4" fill="#cc2222"/>
-    <circle cx="45" cy="190" r="4" fill="#888"/>
-  </svg>`,
-  // 10 - sol / luz
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
-    <rect width="200" height="260" fill="#111"/>
-    <circle cx="100" cy="120" r="32" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="100" y1="70" x2="100" y2="58" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="100" y1="170" x2="100" y2="182" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="50" y1="120" x2="38" y2="120" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="150" y1="120" x2="162" y2="120" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="65" y1="85" x2="57" y2="77" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="135" y1="155" x2="143" y2="163" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="135" y1="85" x2="143" y2="77" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="65" y1="155" x2="57" y2="163" stroke="#f0ede8" stroke-width="1.5"/>
-  </svg>`,
-  // 11 - vacío / caja abierta
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
-    <rect width="200" height="260" fill="#111"/>
-    <path d="M50 160 L100 140 L150 160 L150 210 L100 230 L50 210 Z" stroke="#f0ede8" stroke-width="1.5" stroke-linejoin="round"/>
-    <path d="M50 160 L100 180 L150 160" stroke="#888" stroke-width="1"/>
-    <path d="M100 180 L100 230" stroke="#888" stroke-width="1"/>
-    <path d="M50 120 L100 100 L150 120 L100 140 Z" stroke="#555" stroke-width="1" stroke-linejoin="round"/>
-  </svg>`,
-  // 12 - cadenas / atadura
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
-    <rect width="200" height="260" fill="#111"/>
-    <ellipse cx="80" cy="100" rx="20" ry="12" stroke="#f0ede8" stroke-width="1.5" transform="rotate(-30 80 100)"/>
-    <ellipse cx="110" cy="118" rx="20" ry="12" stroke="#f0ede8" stroke-width="1.5" transform="rotate(-30 110 118)"/>
-    <ellipse cx="90" cy="140" rx="20" ry="12" stroke="#f0ede8" stroke-width="1.5" transform="rotate(-30 90 140)"/>
-    <ellipse cx="115" cy="160" rx="20" ry="12" stroke="#888" stroke-width="1.2" transform="rotate(-30 115 160)"/>
-  </svg>`,
-  // 13 - camino bifurcado
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
-    <rect width="200" height="260" fill="#111"/>
-    <path d="M100 230 L100 140" stroke="#f0ede8" stroke-width="1.5" stroke-linecap="round"/>
-    <path d="M100 140 Q90 110 55 70" stroke="#f0ede8" stroke-width="1.5" stroke-linecap="round"/>
-    <path d="M100 140 Q110 110 145 70" stroke="#888" stroke-width="1.2" stroke-linecap="round"/>
-    <circle cx="100" cy="140" r="5" fill="none" stroke="#cc2222" stroke-width="1.5"/>
-  </svg>`,
-  // 14 - lluvia interior
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
-    <rect width="200" height="260" fill="#111"/>
-    <path d="M30 80 Q60 50 100 60 Q140 50 170 80 Q185 100 170 120 L30 120 Q15 100 30 80Z" stroke="#f0ede8" stroke-width="1.5"/>
-    <line x1="60" y1="135" x2="50" y2="170" stroke="#888" stroke-width="1"/>
-    <line x1="80" y1="130" x2="70" y2="175" stroke="#888" stroke-width="1"/>
-    <line x1="100" y1="132" x2="90" y2="180" stroke="#888" stroke-width="1"/>
-    <line x1="120" y1="130" x2="112" y2="175" stroke="#888" stroke-width="1"/>
-    <line x1="140" y1="135" x2="132" y2="170" stroke="#888" stroke-width="1"/>
-    <line x1="70" y1="185" x2="62" y2="218" stroke="#555" stroke-width="0.8"/>
-    <line x1="95" y1="193" x2="88" y2="220" stroke="#555" stroke-width="0.8"/>
-    <line x1="120" y1="188" x2="114" y2="216" stroke="#555" stroke-width="0.8"/>
-  </svg>`,
-  // 15 - brújula / dirección
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" fill="none">
-    <rect width="200" height="260" fill="#111"/>
-    <circle cx="100" cy="120" r="60" stroke="#f0ede8" stroke-width="1.5"/>
-    <circle cx="100" cy="120" r="4" fill="#f0ede8"/>
-    <polygon points="100,70 93,118 107,118" fill="#cc2222"/>
-    <polygon points="100,170 93,122 107,122" fill="#555"/>
-    <line x1="100" y1="65" x2="100" y2="58" stroke="#f0ede8" stroke-width="1"/>
-    <line x1="100" y1="175" x2="100" y2="182" stroke="#f0ede8" stroke-width="1"/>
-    <line x1="45" y1="120" x2="38" y2="120" stroke="#f0ede8" stroke-width="1"/>
-    <line x1="155" y1="120" x2="162" y2="120" stroke="#f0ede8" stroke-width="1"/>
-    <text x="100" y="56" text-anchor="middle" fill="#888" font-size="9" font-family="monospace">N</text>
-  </svg>`,
-];
+// ─── IMAGE FALLBACK ───────────────────────────────────────────────────────────
+// Shown when an option has no img URL defined
+const FALLBACK_IMG = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 260'%3E%3Crect width='200' height='260' fill='%23111'/%3E%3Ctext x='100' y='135' text-anchor='middle' fill='%23333' font-size='11' font-family='monospace'%3ESIN IMAGEN%3C/text%3E%3C/svg%3E`;
 
 // ─── QUESTIONS DATA ───────────────────────────────────────────────────────────
 const QUESTIONS = [
   {
-    category: "Presencia",
-    text: "¿Qué imagen refleja cómo te sentís ahora mismo?",
+    category: "Contexto",
+    text: "DIMENSIONES SOCIALES",
     options: [
-      { label: "Quietud", svg: 0 },
-      { label: "Movimiento", svg: 6 },
-      { label: "Confusión", svg: 1 },
-      { label: "Espera", svg: 8 },
+      { label: "SABIDURÍA", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/1.%20SABIDUR%C3%8DA.png" },
+      { label: "POTENCIALIDAD", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/1.%20POTENCIALIDAD.png" },
+      { label: "TECNOCIENCIA", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/1.%20TECNOCIENCIA.png" },
+      { label: "NARRATIVA", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/1.%20NARRATIVA.png" },
+      { label: "VITALIDAD", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/1.%20VITALIDAD.png" },
+      { label: "GESTIÓN", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/1.%20GESTI%C3%93N.png" },
     ]
   },
+
   {
-    category: "Cuerpo",
-    text: "¿Cuál de estas figuras se parece más a tu cuerpo hoy?",
+    category: "Contexto",
+    text: "DIMENSIONES PERSONALES",
     options: [
-      { label: "Tenso", svg: 12 },
-      { label: "Enraizado", svg: 5 },
-      { label: "Liviano", svg: 10 },
+      { label: "IDENTIDAD", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/2.%20IDENTIDAD.png" },
+      { label: "CONEXIÓN", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/2.%20CONEXI%C3%93N.png" },
+      { label: "CONTENIDO", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/2.%20CONTENIDO.png" },
+      { label: "DISFRUTE", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/2.%20DISFRUTE.png" },
+      { label: "VÍNCULOS", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/2.%20V%C3%8DNCULOS.png" },
+      { label: "HÁBITAT", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/2.%20H%C3%81BITAT.png" },
+      { label: "RECURSOS", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/2.%20RECURSOS.png" },
+      { label: "ACCIÓN", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/2.%20ACCI%C3%93N.png" },
     ]
   },
+
   {
-    category: "Entorno",
-    text: "¿Cómo vivís el espacio donde estás?",
+    category: "Contexto",
+    text: "CONTEXTOS",
     options: [
-      { label: "Amplio", svg: 2 },
-      { label: "Laberíntico", svg: 9 },
-      { label: "Contenedor", svg: 11 },
-      { label: "Conectado", svg: 7 },
+      { label: "NATURALEZA", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/3.%20NATURALEZA.png" },
+      { label: "CIUDAD", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/3.%20CIUDAD.png" },
     ]
   },
+
   {
-    category: "Tiempo",
-    text: "¿Qué imagen representa tu relación con el tiempo?",
+    category: "Contexto",
+    text: "ESTILOS",
     options: [
-      { label: "Detenido", svg: 8 },
-      { label: "Bifurcado", svg: 13 },
-      { label: "Circular", svg: 1 },
-      { label: "Fluyendo", svg: 6 },
-      { label: "Pesado", svg: 12 },
+      { label: "CLÁSICO", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/4.%20CL%C3%81SICO.png" },
+      { label: "UNDER", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/4.%20UNDER.png" },
     ]
   },
+
   {
-    category: "Vínculos",
-    text: "¿Cómo te relacionás con los demás en este momento?",
+    category: "Contexto",
+    text: "ACTIVIDAD",
     options: [
-      { label: "En red", svg: 7 },
-      { label: "Solo/a", svg: 0 },
-      { label: "Atado/a", svg: 12 },
-      { label: "En umbral", svg: 2 },
+      { label: "DIURNA", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/5.%20DIURNA.png" },
+      { label: "NOCTURNA", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/5.%20NOCTURNA.png" },
     ]
   },
+
   {
-    category: "Emoción",
-    text: "¿Qué símbolo se acerca más a lo que estás sintiendo?",
+    category: "Proyección",
+    text: "ESTÍMULOS",
     options: [
-      { label: "Tempestad", svg: 14 },
-      { label: "Luz", svg: 10 },
-      { label: "Vacío", svg: 11 },
-      { label: "Espiral", svg: 1 },
-      { label: "Raíz", svg: 5 },
-      { label: "Calma", svg: 6 },
+      { label: "SILENCIO", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/6.%20SILENCIO.png" },
+      { label: "SONIDOS", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/6.%20SONIDO.png" },
     ]
   },
+
   {
-    category: "Dirección",
-    text: "¿Sabés hacia dónde vas?",
+    category: "Proyección",
+    text: "INFORMACIÓN",
     options: [
-      { label: "Sí, claro", svg: 15 },
-      { label: "En duda", svg: 13 },
-      { label: "Dando vueltas", svg: 1 },
-      { label: "Estancado/a", svg: 8 },
+      { label: "POCO EN MUCHO", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/7.%20POCO.png" },
+      { label: "MUCHO EN POCO", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/7.%20MUCHO.png" },
     ]
   },
+
   {
-    category: "Obstáculos",
-    text: "¿Qué imagen representa lo que te frena?",
+    category: "Proyección",
+    text: "APRENDIZAJE",
     options: [
-      { label: "Montaña", svg: 3 },
-      { label: "Cadenas", svg: 12 },
-      { label: "Laberinto", svg: 9 },
-      { label: "Espejo", svg: 4 },
+      { label: "TEORÍA", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/8.%20TEOR%C3%8DA.png" },
+      { label: "PRÁCTICA", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/8.%20PR%C3%81CTICA.png" },
     ]
   },
+
   {
-    category: "Recursos",
-    text: "¿Con qué contás hoy para avanzar?",
+    category: "Proyección",
+    text: "REACCIÓN",
     options: [
-      { label: "Raíces", svg: 5 },
-      { label: "Red", svg: 7 },
-      { label: "Brújula", svg: 15 },
-      { label: "Luz propia", svg: 10 },
-      { label: "Poco", svg: 11 },
+      { label: "RACIONAL", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/9.%20RACIONAL.png" },
+      { label: "EMOCIONAL", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/9.%20EMOCIONAL.png" },
     ]
   },
+
   {
-    category: "Pasado",
-    text: "¿Cómo cargás lo que ya viviste?",
+    category: "Proyección",
+    text: "PERSPECTIVA",
     options: [
-      { label: "Como peso", svg: 12 },
-      { label: "Como raíz", svg: 5 },
-      { label: "Con distancia", svg: 4 },
-      { label: "Todavía cerca", svg: 1 },
+      { label: "SISTEMA", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/10.%20TODO.png" },
+      { label: "PARTES", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/10.%20PARTE.png" },
     ]
   },
+
   {
-    category: "Futuro",
-    text: "¿Cómo imaginás lo que viene?",
+    category: "Proyección",
+    text: "RECARGA",
     options: [
-      { label: "Abierto", svg: 2 },
-      { label: "Incierto", svg: 9 },
-      { label: "Luminoso", svg: 10 },
-      { label: "Borroso", svg: 14 },
-      { label: "Esperanzador", svg: 15 },
+      { label: "INTROVERSIÓN", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/11.%20INTROVERSI%C3%93N.png" },
+      { label: "EXTROVERSIÓN", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/11.%20EXTROVERSI%C3%93N.png" },
+    ]
+  },
+
+  {
+    category: "Relación",
+    text: "HERRAMIENTAS",
+    options: [
+      { label: "DIGITALES", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/12.%20DIGITAL.png" },
+      { label: "ANALÓGICAS", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/12.%20ANAL%C3%93GICO.png" },
+    ]
+  },
+
+  {
+    category: "Relación",
+    text: "PRODUCCIÓN",
+    options: [
+      { label: "AFUERA", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/13.%20PUERTAS%20AFUERA.png" },
+      { label: "ADENTRO", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/13.%20PUERTAS%20ADENTRO.png" },
+    ]
+  },
+
+  {
+    category: "Relación",
+    text: "PRODUCTIVIDAD",
+    options: [
+      { label: "SOLO", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/14.%20CONMIGO.png" },
+      { label: "CON OTRO", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/14.%20CON%20OTRO.png" },
+      { label: "CON OTROS", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/14.%20CON%20OTROS.png" },
+    ]
+  },
+
+  {
+    category: "Relación",
+    text: "INTERACCIÓN",
+    options: [
+      { label: "HABLAR", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/15.%20HABLAR.png" },
+      { label: "ESCUCHAR", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/15.%20ESCUCHAR.png" },
+    ]
+  },
+
+  {
+    category: "Relación",
+    text: "PÚBLICO",
+    options: [
+      { label: "NIÑOS", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/16.%20NI%C3%91OS.png" },
+      { label: "JÓVENES", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/16.%20J%C3%93VENES.png" },
+      { label: "ADULTOS", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/16.%20ADULTOS.png" },
+    ]
+  },
+
+  {
+    category: "Relación",
+    text: "ROL SOCIAL",
+    options: [
+      { label: "COLABORADOR", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/17.%20COLABORADOR.png" },
+      { label: "AUTOGESTOR", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/17.%20AUTOGESTOR.png" },
+      { label: "MENTOR", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/17.%20MENTOR.png" },
+      { label: "LIDER", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/17.%20L%C3%8DDER.png" },
+      { label: "DIRECTOR", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/17.%20DIRECTOR.png" },
+    ]
+  },
+
+  {
+    category: "Relación",
+    text: "HABILIDADES",
+    options: [
+      { label: "LÓGICAS", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/18.%20L%C3%93GICAS.png" },
+      { label: "VERBALES", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/18.%20VERBALES.png" },
+      { label: "CORPORALES", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/18.%20CORPORALES.png" },
+      { label: "CREATIVAS", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/18.%20CREATIVAS.png" },
+      { label: "MUSICALES", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/18.%20MUSICALES.png" },
+    ]
+  },
+
+  {
+    category: "Relación",
+    text: "PREDISPOSICIÓN",
+    options: [
+      { label: "FUEGO", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/19.%20FUEGO.png" },
+      { label: "AIRE", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/19.%20AIRE.png" },
+      { label: "TIERRA", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/19.%20TIERRA.png" },
+      { label: "AGUA", img: "https://assets.protocore.com.ar/proyectos/unmentaling/mt/ICONOS/19.%20AGUA.png" },
     ]
   },
   {
     category: "Identidad",
-    text: "¿Qué imagen dice algo verdadero sobre vos?",
-    options: [
-      { label: "Reflejo", svg: 4 },
-      { label: "Enraizado/a", svg: 5 },
-      { label: "En camino", svg: 13 },
-      { label: "Conectado/a", svg: 7 },
-    ]
+    text: "Características: 3 conceptos que hablen de vos",
+    type: "text",
+    hint: "Escribí tres palabras"
   },
   {
-    category: "Necesidad",
-    text: "¿Qué necesitás en este momento?",
-    options: [
-      { label: "Claridad", svg: 15 },
-      { label: "Soltar", svg: 12 },
-      { label: "Fluir", svg: 6 },
-      { label: "Parar", svg: 8 },
-      { label: "Conectar", svg: 7 },
-      { label: "Luz", svg: 10 },
-    ]
+    category: "Identidad",
+    text: "Formas de ser: 3 aspectos que te caractericen",
+    type: "text",
+    hint: "Escribí tres palabras"
   },
   {
-    category: "Acción",
-    text: "¿Qué figura describe mejor tu próximo paso?",
-    options: [
-      { label: "Cruzar la puerta", svg: 2 },
-      { label: "Escalar", svg: 3 },
-      { label: "Fluir", svg: 6 },
-      { label: "Descansar", svg: 0 },
-    ]
-  },
-  {
-    category: "Cierre",
-    text: "¿Qué palabra visual describe este proceso para vos?",
-    options: [
-      { label: "Caos", svg: 1 },
-      { label: "Orden", svg: 9 },
-      { label: "Transformación", svg: 13 },
-      { label: "Silencio", svg: 0 },
-      { label: "Apertura", svg: 2 },
-    ]
-  },
-  {
-    category: "Integración",
-    text: "¿Qué imagen te gustaría llevarte de este análisis?",
-    options: [
-      { label: "Raíces", svg: 5 },
-      { label: "Brújula", svg: 15 },
-      { label: "Luz", svg: 10 },
-      { label: "Red", svg: 7 },
-      { label: "Camino", svg: 13 },
-      { label: "Fluir", svg: 6 },
-    ]
-  },
+    category: "Identidad",
+    text: "Valores: 3 aspectos que te inspiran y mueven",
+    type: "text",
+    hint: "Escribí tres palabras"
+  }
 ];
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
@@ -923,51 +1034,64 @@ const answers = {};
 // ─── BUILD DOM ────────────────────────────────────────────────────────────────
 function buildQuestions() {
   const container = document.getElementById('questionsContainer');
-
   QUESTIONS.forEach((q, qi) => {
     const block = document.createElement('section');
     block.className = 'question-block' + (qi === 0 ? ' active' : '');
     block.id = `q${qi}`;
     block.dataset.index = qi;
-
-    const count = q.options.length;
-    const gridCount = count <= 6 ? count : 6;
-
-    block.innerHTML = `
-      <div class="q-header">
-        <span class="q-number">${String(qi + 1).padStart(2,'0')}</span>
-        <div class="q-text-wrap">
-          <p class="q-category">${q.category}</p>
-          <h2 class="q-text">${q.text}</h2>
-          <p class="q-hint">Seleccioná la imagen que más resuena</p>
-        </div>
-      </div>
-      <div class="options-grid" data-count="${gridCount}" id="grid${qi}">
-        ${q.options.map((opt, oi) => `
-          <div class="option-card" id="opt_${qi}_${oi}" onclick="selectOption(${qi}, ${oi}, '${escapeLabel(opt.label)}')">
-            <div class="option-img-wrap">
-              <div class="option-placeholder">${PLACEHOLDER_SVGS[opt.svg]}</div>
-            </div>
-            <div class="option-check"><div class="check-dot"></div></div>
-            <div class="option-label">${opt.label}</div>
-          </div>
-        `).join('')}
-      </div>
-      <div class="q-divider"></div>
-    `;
-
+    block.innerHTML = q.type === 'text' ? buildTextQuestion(q, qi) : buildOptionQuestion(q, qi);
     container.appendChild(block);
   });
 }
 
-function escapeLabel(s) { return s.replace(/'/g,"&#39;"); }
+function buildOptionQuestion(q, qi) {
+  const count = q.options.length;
+  const cards = q.options.map((opt, oi) => {
+    const src = opt.img || FALLBACK_IMG;
+    return `
+    <div class="option-card" id="opt_${qi}_${oi}" onclick="selectOption(${qi}, ${oi})">
+      <div class="option-img-wrap">
+        <img class="option-img" src="${src}" alt="${opt.label}" loading="lazy">
+      </div>
+      <div class="option-check"><div class="check-dot"></div></div>
+      <div class="option-label">${opt.label}</div>
+    </div>`;
+  }).join('');
+  return `
+    <div class="q-header">
+      <span class="q-number">${String(qi + 1).padStart(2,'0')}</span>
+      <div class="q-text-wrap">
+        <p class="q-category">${q.category}</p>
+        <h2 class="q-text">${q.text}</h2>
+        <p class="q-hint">Seleccioná la imagen que más resuena</p>
+      </div>
+    </div>
+    <div class="options-grid" data-count="${count}" id="grid${qi}">${cards}</div>
+    <div class="q-divider"></div>`;
+}
+
+function buildTextQuestion(q, qi) {
+  return `
+    <div class="q-header">
+      <span class="q-number">${String(qi + 1).padStart(2,'0')}</span>
+      <div class="q-text-wrap">
+        <p class="q-category">${q.category}</p>
+        <h2 class="q-text">${q.text}</h2>
+        <p class="q-hint">${q.hint || 'Escribí tres palabras separadas por coma'}</p>
+      </div>
+    </div>
+    <div class="text-inputs-wrap" id="textWrap${qi}">
+      <input type="text" class="word-input" id="word_${qi}" placeholder="palabra, palabra, palabra">
+      <button class="btn-confirm" onclick="confirmText(${qi})">Confirmar</button>
+    </div>
+    <div class="q-divider"></div>`;
+}
 
 // ─── INTERACTION ──────────────────────────────────────────────────────────────
-function selectOption(qi, oi, label) {
-  // Deselect previous in same question
-  document.querySelectorAll(`#q${qi} .option-card`).forEach(c => c.classList.remove('selected'));
+function selectOption(qi, oi) {
+  const label = QUESTIONS[qi].options[oi].label;
 
-  // Select new
+  document.querySelectorAll(`#q${qi} .option-card`).forEach(c => c.classList.remove('selected'));
   document.getElementById(`opt_${qi}_${oi}`).classList.add('selected');
   answers[qi] = { question: QUESTIONS[qi].text, answer: label, category: QUESTIONS[qi].category };
 
@@ -979,6 +1103,35 @@ function selectOption(qi, oi, label) {
   updateProgress();
 
   // Auto-scroll to next question or submit
+  setTimeout(() => {
+    const nextIndex = qi + 1;
+    if (nextIndex < QUESTIONS.length) {
+      const nextBlock = document.getElementById(`q${nextIndex}`);
+      nextBlock.classList.add('active');
+      nextBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      const submitSection = document.getElementById('submitSection');
+      submitSection.classList.add('visible');
+      submitSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 300);
+}
+
+function confirmText(qi) {
+  const el = document.getElementById(`word_${qi}`);
+  const answer = el ? el.value.trim() : '';
+  if (!answer) return;
+
+  el.disabled = true;
+
+  answers[qi] = { question: QUESTIONS[qi].text, answer, category: QUESTIONS[qi].category };
+
+  const block = document.getElementById(`q${qi}`);
+  block.classList.remove('active');
+  block.classList.add('answered');
+
+  updateProgress();
+
   setTimeout(() => {
     const nextIndex = qi + 1;
     if (nextIndex < QUESTIONS.length) {
@@ -1006,8 +1159,41 @@ function startForm() {
   intro.style.opacity = '0';
   intro.style.transition = 'opacity 0.5s';
   setTimeout(() => {
-    document.getElementById('q0').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const s1 = document.getElementById('sUserInfo');
+    s1.classList.add('active');
+    s1.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 300);
+}
+
+function submitUserInfo() {
+  const nombre = document.getElementById('f_nombre').value.trim();
+  const mail   = document.getElementById('f_mail').value.trim();
+  const err    = document.getElementById('errUserInfo');
+
+  if (!nombre || !mail) {
+    err.classList.add('show');
+    setTimeout(() => err.classList.remove('show'), 4000);
+    return;
+  }
+
+  const s2 = document.getElementById('sSituacion');
+  s2.classList.add('active');
+  setTimeout(() => s2.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+}
+
+function submitSituacion() {
+  const situacion = document.getElementById('f_situacion').value.trim();
+  const err       = document.getElementById('errSituacion');
+
+  if (!situacion) {
+    err.classList.add('show');
+    setTimeout(() => err.classList.remove('show'), 4000);
+    return;
+  }
+
+  const q0 = document.getElementById('q0');
+  q0.classList.add('active');
+  setTimeout(() => q0.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 }
 
 // ─── SUBMIT ───────────────────────────────────────────────────────────────────
@@ -1031,6 +1217,15 @@ async function submitForm() {
     const payload = {
       proceso: "Mientras Tanto",
       timestamp: new Date().toISOString(),
+      usuario: {
+        nombre:     document.getElementById('f_nombre').value.trim(),
+        apodo:      document.getElementById('f_apodo').value.trim(),
+        nacimiento: document.getElementById('f_nacimiento').value,
+        celular:    document.getElementById('f_celular').value.trim(),
+        mail:       document.getElementById('f_mail').value.trim(),
+        ocupacion:  document.getElementById('f_ocupacion').value.trim(),
+      },
+      situacion_actual: document.getElementById('f_situacion').value.trim(),
       respuestas_completas: answered === QUESTIONS.length,
       total_respondidas: answered,
       total_preguntas: QUESTIONS.length,
@@ -1149,6 +1344,7 @@ function setupObserver() {
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 buildQuestions();
 setupObserver();
+updateProgress();
 </script>
 </body>
 </html>
